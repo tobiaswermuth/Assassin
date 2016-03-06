@@ -1,9 +1,24 @@
 ="Name: #{@user.name}"
 %p
+="Your Kill Pin: #{@user.kill_pin}"
+%p
 ="Email: #{@user.email}"
 %p
 ="Image Url: #{@user.image_url}"
 %p
 ="Game: #{@user.game.id}"
 %p
-="Target: #{@user.target.name}" if @user.target
+- if @game.state == :over
+  - if @game.winner == @user
+    You are the winner! Congratulations!
+  - else
+    You lost.
+- elsif @game.state == :running
+  - if @user.target.nil?
+    You lost.
+  - else
+    ="Target: #{@user.target.name}"
+    %form.form-inline{:action => "/game/#{@game.id}/user/#{@user.id}/kill_target", :method => "post"}
+      .form-group{:class => "#{'has-danger' unless params[:error].nil?}"}
+        %input.form-control{:name => "target_kill_pin", :placeholder => params[:error].nil? ? "#{@user.target.name}'s kill pin" : params[:error], :type => "text"}
+      %button.btn.btn-danger{:type => "submit"} Kill

@@ -1,6 +1,10 @@
 %h2{:style => "text-align: center"} Join a Game
 %form{:action => "/game/join", :method => "get"}
-  %fieldset.form-group
-    %label Game ID
-    %input.form-control{:name => "id", :placeholder => "A1234", :type => "text"}/
+  %fieldset.form-group{:class => "#{'has-danger' unless params[:error].nil?}"}
+    %form-control-label
+      - if params[:error].nil?
+        ="Game ID"
+      - else
+        ="Game ID (#{params[:error]})"
+    %input.form-control.form-control-danger{:name => "id", :placeholder => "A1234", :type => "text"}/
   %button.btn.btn-primary.center-block{:type => "submit"} Join

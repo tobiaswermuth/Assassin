@@ -1,6 +1,9 @@
 %h2{:style => "text-align: center"} Game Overview
 
 ="ID: #{@game.id}"
+- if @game.state == :join
+  %p
+  %a{:href => "/game/#{@game.id}/join", :target => "_blank"}Join link
 %p
 ="State: #{@game.state}"
 %p
@@ -12,9 +15,10 @@
 %p
 ="#{@game.users.length} Users: #{@game.users.map{|_,user| user.name}.join ', '}"
 %p
-- if @game.state != :join
-  - remaining_players = @game.users.values.select{|user| !user.target.nil?}
-  ="#{remaining_players.length} remaining players: #{remaining_players.join ', '}"
+- if @game.state == :running
+  ="#{@game.remaining_users.length} Remaining players: #{@game.remaining_users.map{|_| _.name}.join ', '}"
+- elsif @game.state == :over
+  ="Winner: #{@game.winner.name}"
 - elsif @game.users.length < 2
   2 or more users needed!
 - else

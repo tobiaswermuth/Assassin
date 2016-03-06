@@ -1,5 +1,7 @@
 class GameController < ActionController::Base
-  include RedirectionHelper
+  include ExceptionHelper
+
+  rescue_from RedirectionException, :with => :redirect_exception
 
   layout "application"
   protect_from_forgery with: :null_session
@@ -10,13 +12,12 @@ class GameController < ActionController::Base
     game = Game.new params[:name], params[:rules]
     @@games[game.id] = game
 
-    redirect game_admin_route game, "overview"
+    redirect_to game_admin_route game, "overview"
   end
 
   def overview
     @game = game_by_id params[:id], "/"
-
-    redirect_if @game.password != params[:password], "/"
+    redirect_to "/" if @game.password != params[:password]
   end
 
   def start
@@ -35,15 +36,22 @@ class GameController < ActionController::Base
       end
     end
 
-    redirect game_admin_route game, "overview"
+    redirect_to game_admin_route game, "overview"
   end
 
   def join_get_id
-    redirect_if !params[:id].nil?, "/game/#{params[:id]}/join"
+    unless params[:id].nil?
+      unless params[:id].empty?
+        redirect_to "/game/#{params[:id]}/join"
+      else
+        redirect_to "/game/join"
+      end
+    end
   end
 
   def join_form
     @game = game_by_id params[:id]
+    raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is no longer joinable!") if @game.state != :join
   end
 
   def join
@@ -52,25 +60,44 @@ class GameController < ActionController::Base
     user = User.new params[:name], params[:email], params[:image_url], game
     game.users[user.id] = user
 
-    redirect "/game/#{game.id}/user/#{user.id}"
+    redirect_to "/game/#{game.id}/user/#{user.id}"
   end
 
   def user
-    @user = game_by_id(params[:id]).user_by_id params[:user_id]
+    @game = game_by_id(params[:id])
+    @user = @game.user_by_id params[:user_id]
   end
 
-  def kill
-    params[:user_id]
-    params[:enemy_user_id]
-    params[:enemy_pin]
+  def kill_target
+    game = game_by_id(params[:id])
+    user = game.user_by_id params[:user_id]
+    target = user.target
+
+    if params[:target_kill_pin] == target.kill_pin
+      user.target = target.target
+      target.target = nil
+
+      if game.remaining_users.length == 1
+        game.state = :over
+      end
+
+      redirect_to "/game/#{game.id}/user/#{user.id}"
+    else
+      raise GameNotJoinableException.new(params[:target_kill_pin], "/game/#{game.id}/user/#{user.id}?error=#{target.name}'s kill pin is not #{params[:target_kill_pin]}!")
+    end
   end
 
   def game_admin_route(game, post_fix = "")
     "/game/#{game.id}/admin/#{game.password}/#{post_fix}"
   end
 
-  def game_by_id(game_id, fallback_url = "/game/join_get_id")
-    redirect_if((game = @@games[game_id]).nil?, fallback_url)
+  def game_by_id(game_id, fallback_url = "/game/join")
+    fallback_url = "#{fallback_url}?error=Could not find a game with ID \'#{game_id}\'!"
+    raise GameNotFoundException.new(game_id, fallback_url) if (game = @@games[game_id]).nil?
     game
+  end
+
+  def redirect_exception(exception)
+    redirect_to exception.fallback_url unless performed?
   end
 end
