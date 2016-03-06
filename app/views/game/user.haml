@@ -1,0 +1,9 @@
+="Name: #{@user.name}"
+%p
+="Email: #{@user.email}"
+%p
+="Image Url: #{@user.image_url}"
+%p
+="Game: #{@user.game.id}"
+%p
+="Target: #{@user.target.id}" if @user.target

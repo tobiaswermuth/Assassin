@@ -1,0 +1,16 @@
+%h2{:style => "text-align: center"} Game Overview
+
+="ID: #{@game.id}"
+%p
+="State: #{@game.state}"
+%p
+="Name: #{@game.name}"
+%p
+="Rules: #{@game.rules}"
+%p
+="Password: #{@game.password}"
+%p
+="#{@game.users.length} Users: #{@game.users.map{|_,user| user.name}.join ', '}"
+- if @game.state == :join
+  %p
+  %a.btn.btn-primary.center-block{:href => "/game/#{@game.id}/admin/#{@game.password}/start"} Start Game

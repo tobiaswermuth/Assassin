@@ -1,11 +1,18 @@
 Rails.application.routes.draw do
-  root :to => 'system#index'
+  root :to => 'game#index'
 
-  get 'create' => 'system#create'
+  get 'game/create' => 'game#create'
+  post 'game/create' => 'game#do_create'
 
-  get 'join' => 'system#join'
-  get 'join/:token' => 'system#join_game'
-  post 'register/:token' => 'system#register'
+  get 'game/:id/admin/:password/overview' => 'game#overview'
+  get 'game/:id/admin/:password/start' => 'game#start'
+
+  get 'game/join' => 'game#join_get_id'
+  get 'game/:id/join' => 'game#join_form'
+  post 'game/:id/join' => 'game#join'
+
+  get 'game/:id/user/:user_id' => 'game#user'
+  post 'game/:id/user/:user_id/kill/:enemy_user_id/:enemy_pin' => 'game#kill'
 end
 
   # The priority is based upon order of creation: first created -> highest priority.

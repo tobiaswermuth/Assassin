@@ -1,0 +1,9 @@
+%h2{:style => "text-align: center"} Create a new Game
+%form{:action => "/game/create", :method => "post"}
+  %fieldset.form-group
+    %label Name
+    %input.form-control{:name => "name", :placeholder => "The ultimate Game", :type => "text"}
+  %fieldset.form-group
+    %label Rules
+    %textarea.form-control{:name => "rules", :placeholder => "Use your full name!", :rows => "2"}
+  %button.btn.btn-primary.center-block{:type => "submit"} Create

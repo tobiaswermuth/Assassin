@@ -1,0 +1,6 @@
+%h2{:style => "text-align: center"} Join a Game
+%form{:action => "/game/join", :method => "get"}
+  %fieldset.form-group
+    %label Game ID
+    %input.form-control{:name => "id", :placeholder => "A1234", :type => "text"}/
+  %button.btn.btn-primary.center-block{:type => "submit"} Join

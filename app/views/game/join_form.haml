@@ -1,14 +1,17 @@
 %h2{:style => "text-align: center"}
   Join
   %br
-  ="'#{@game_name}'"
-%form{:action => "/join", :method => "get"}
+  ="'#{@game.name}'"
+%form{:action => "/game/#{@game.id}/join", :method => "post"}
   %fieldset.form-group
     %label Name
     %input.form-control{:name => "name", :placeholder => "Use your full name!", :type => "text"}/
   %fieldset.form-group
     %label Email
-    %input.form-control{:name => "name", :placeholder => "me@you.com", :type => "text"}/
+    %input.form-control{:name => "email", :placeholder => "me@you.com", :type => "text"}/
     %small.text-muted We'll only use your Email to send your activation link.
-  %label.center-block{:style => "text-align: center"} Upload image here!
+  %fieldset.form-group
+    %label.center-block{:style => "text-align: center"} Upload image here!
+    %input{:name => "image_url", :type => "hidden", :value => "image.url.com"}/
+
   %button.btn.btn-primary.center-block{:type => "submit"} Join
