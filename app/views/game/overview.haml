@@ -11,6 +11,11 @@
 ="Password: #{@game.password}"
 %p
 ="#{@game.users.length} Users: #{@game.users.map{|_,user| user.name}.join ', '}"
-- if @game.state == :join
-  %p
+%p
+- if @game.state != :join
+  - remaining_players = @game.users.values.select{|user| !user.target.nil?}
+  ="#{remaining_players.length} remaining players: #{remaining_players.join ', '}"
+- elsif @game.users.length < 2
+  2 or more users needed!
+- else
   %a.btn.btn-primary.center-block{:href => "/game/#{@game.id}/admin/#{@game.password}/start"} Start Game

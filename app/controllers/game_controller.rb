@@ -22,6 +22,19 @@ class GameController < ActionController::Base
   def start
     game = game_by_id params[:id]
     game.state = :running
+
+    users_to_assign = game.users.values
+    first_user = users_to_assign.first
+    while users_to_assign.length > 0
+      user = users_to_assign.first
+      users_to_assign = users_to_assign.reject{|_| _ == user}
+      if users_to_assign.length > 0
+        user.target = users_to_assign.sample
+      else
+        user.target = first_user
+      end
+    end
+
     redirect game_admin_route game, "overview"
   end
 
