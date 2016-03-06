@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   post 'game/:id/join' => 'game#join'
 
   get 'game/:id/user/:user_id' => 'game#user'
-  post 'game/:id/user/:user_id/kill/:enemy_user_id/:enemy_pin' => 'game#kill'
+  post 'game/:id/user/:user_id/kill_target' => 'game#kill_target'
 end
 
   # The priority is based upon order of creation: first created -> highest priority.
