@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  root :to => 'game#index'
+  root :to => 'application#index'
+  get 'terms' => 'application#terms'
+  get 'privacy' => 'application#privacy'
 
   get 'game/create' => 'game#create'
   post 'game/create' => 'game#do_create'

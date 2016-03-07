@@ -9,6 +9,8 @@
 %p
 ="Rules: #{@game.rules}"
 %p
+="Invitation required?: #{@game.invitation_only}"
+%p
 ="Password: #{@game.password}"
 %p
 ="#{@game.users.length} Users: #{@game.users.map{|_,user| user.name}.join ', '}"

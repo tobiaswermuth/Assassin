@@ -1,10 +1,10 @@
 class GameController < ActionController::Base
   include ExceptionHelper
 
-  rescue_from RedirectionException, :with => :redirect_exception
-
   layout "application"
   protect_from_forgery with: :null_session
+
+  rescue_from RedirectionException, :with => :redirect_exception
 
   @@games = {}
 
@@ -20,7 +20,7 @@ class GameController < ActionController::Base
   }
 
   def do_create
-    game = Game.new params[:name], params[:rules]
+    game = Game.new params[:name], params[:rules], !params[:invitation_only].nil?
     @@games[game.id] = game
 
     redirect_to game_admin_route game, "overview"

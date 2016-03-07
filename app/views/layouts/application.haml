@@ -13,5 +13,8 @@
       %a.navbar-brand{:href => "/", :style => "font-weight: 300;"} Assassin
       .navbar-brand.navbar-center
         =@title || "Assassin"
-    .container{:style => "padding-top: 65px;"}
+    .container{:style => "padding-top: 65px;padding-bottom: 50px;"}
       = yield
+    %nav.navbar.navbar-fixed-bottom.navbar-light.bg-faded
+      %a{:href => "/terms", :style => "font-weight: 200;"} Terms & Conditions
+      %a.pull-xs-right{:href => "/privacy", :style => "font-weight: 200;"} Privacy Policy

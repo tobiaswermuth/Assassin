@@ -1,10 +1,11 @@
 class Game
-  attr_accessor :id, :name, :rules, :users, :password, :state
+  attr_accessor :id, :name, :rules, :invitation_only, :users, :password, :state
 
-  def initialize(name, rules)
+  def initialize(name, rules, invitation_only)
     @id = SecureRandom.hex
     @name = name
     @rules = rules
+    @invitation_only = invitation_only
     @password = SecureRandom.hex
     @users = {}
     @state = :join

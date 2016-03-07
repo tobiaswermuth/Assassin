@@ -1,8 +1,12 @@
 %form{:action => "/game/create", :method => "post"}
   %fieldset.form-group
     %label Name
-    %input.form-control{:name => "name", :placeholder => "The ultimate Game", :type => "text"}
+    %input.form-control{:name => "name", :placeholder => "e.g. The ultimate Game", :type => "text"}
   %fieldset.form-group
     %label Rules
-    %textarea.form-control{:name => "rules", :placeholder => "Use your full name!", :rows => "2"}
+    %textarea.form-control{:name => "rules", :placeholder => "e.g. Use your full name!", :rows => "2"}
+  .checkbox
+  %label
+    %input{:type => "checkbox", :name => "invitation_only"}/
+    Invitation only
   %button.btn.btn-primary.center-block{:type => "submit"} Create
