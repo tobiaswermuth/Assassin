@@ -10,6 +10,8 @@
     %meta{:content => "width=device-width, initial-scale=1, shrink-to-fit=no", :name => "viewport"}/
   %body
     %nav.navbar.navbar-fixed-top.navbar-dark.bg-primary
-      %a.navbar-brand{:href => "/"} Assassin
+      %a.navbar-brand{:href => "/", :style => "font-weight: 300;"} Assassin
+      .navbar-brand.navbar-center
+        =@title || "Assassin"
     .container{:style => "padding-top: 65px;"}
       = yield

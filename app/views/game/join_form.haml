@@ -1,7 +1,3 @@
-%h2{:style => "text-align: center"}
-  Join
-  %br
-  ="'#{@game.name}'"
 %form{:action => "/game/#{@game.id}/join", :method => "post"}
   %fieldset.form-group
     %label Name

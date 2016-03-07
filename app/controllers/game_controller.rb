@@ -8,6 +8,17 @@ class GameController < ActionController::Base
 
   @@games = {}
 
+  @@titles = {
+    "index" => "Welcome to Assassin",
+    "create" => "Create a new Assassin Game",
+    "join_get_id" => "Join an Assassin Game",
+    "user" => "Your Game Overview"
+  }
+
+  before_action {
+    @title = @@titles[action_name]
+  }
+
   def do_create
     game = Game.new params[:name], params[:rules]
     @@games[game.id] = game
@@ -18,6 +29,8 @@ class GameController < ActionController::Base
   def overview
     @game = game_by_id params[:id], "/"
     redirect_to "/" if @game.password != params[:password]
+
+    @title = "#{@game.name} - Administration"
   end
 
   def start
@@ -52,6 +65,7 @@ class GameController < ActionController::Base
   def join_form
     @game = game_by_id params[:id]
     raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is no longer joinable!") if @game.state != :join
+    @title = "Join #{@game.name}"
   end
 
   def join
