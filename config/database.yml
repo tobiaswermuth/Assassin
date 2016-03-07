@@ -10,23 +10,21 @@
 #   http://dev.mysql.com/doc/refman/5.0/en/old-client.html
 #
 default: &default
-  adapter: mysql2
+  adapter: sqlite3
   encoding: utf8
   pool: 5
-  username: root
-  password: mysql
-  socket: /tmp/mysql.sock
+  timeout: 5000
 
 development:
   <<: *default
-  database: Assassin_development
+  database: db/development.sqlite3
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: Assassin_test
+  database: db/test.sqlite3
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -49,6 +47,4 @@ test:
 #
 production:
   <<: *default
-  database: Assassin_production
-  username: Assassin
-  password: <%= ENV['ASSASSIN_DATABASE_PASSWORD'] %>
+  database: db/production.sqlite3
