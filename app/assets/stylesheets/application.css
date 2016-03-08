@@ -14,12 +14,30 @@
  *= require_self
  */
 
-.navbar-center
+.section
 {
-    position: absolute;
-    width: 100%;
-    left: 0;
-    text-align: center;
-    margin: auto;
-    z-index: -1;
+  padding-top: 50px;
+}
+.abs
+{
+  position: absolute;
+  z-index: 1;
+}
+.text-center
+{
+  width: 100%;
+  left: 0;
+  text-align: center;
+  margin: auto;
+}
+.img-center
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto
+}
+.img-invert
+{
+  -webkit-filter: invert(1);
+  filter: invert(1);
 }

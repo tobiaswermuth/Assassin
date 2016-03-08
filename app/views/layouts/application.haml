@@ -1,7 +1,7 @@
 !!!
 %html
   %head
-    %title Assassin
+    %title Assassin Game
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
     = javascript_include_tag 'application', 'data-turbolinks-track' => true
     = csrf_meta_tags
@@ -9,12 +9,14 @@
     %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"}
     %meta{:content => "width=device-width, initial-scale=1, shrink-to-fit=no", :name => "viewport"}/
   %body
-    %nav.navbar.navbar-fixed-top.navbar-dark.bg-primary
-      %a.navbar-brand{:href => "/", :style => "font-weight: 300;"} Assassin
-      .navbar-brand.navbar-center
+    %nav.navbar.navbar-dark.bg-primary
+      %a.navbar-brand{:href => "/"}
+        %img.img-invert.img-fluid{:src => image_url('flaticon/home.png'), :style => "max-width: 26px;"}
+      .navbar-brand{:style => "font-weight: 300;"}
         =@title || "Assassin"
-    .container{:style => "padding-top: 65px;padding-bottom: 50px;"}
+    .container{:style => "padding-top: 10px; padding-bottom: 50px;"}
       = yield
-    %nav.navbar.navbar-fixed-bottom.navbar-light.bg-faded
-      %a{:href => "/terms", :style => "font-weight: 200;"} Terms & Conditions
-      %a.pull-xs-right{:href => "/privacy", :style => "font-weight: 200;"} Privacy Policy
+    %nav.navbar.navbar-fixed-bottom.navbar-light.bg-faded.text-center{:style => "font-weight: 200;"}
+      %a{:href => "/about"} About
+      %a{:href => "/terms", :style => "padding-left: 20px;"} Terms & Conditions
+      %a{:href => "/privacy", :style => "padding-left: 20px;"} Privacy Policy

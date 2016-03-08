@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
 
   @@titles = {
     "index" => "Welcome to the Assassin Game",
+    "about" => "About",
     "terms" => "Terms and Conditions",
     "privacy" => "Privacy Policy",
   }
