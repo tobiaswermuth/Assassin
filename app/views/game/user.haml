@@ -1,12 +1,9 @@
-="Name: #{@user.name}"
-%p
-="Your Kill Pin: #{@user.kill_pin}"
-%p
-="Email: #{@user.email}"
-%p
-="Image Url: #{@user.image_url}"
-%p
-="Game: #{@user.game.id}"
+%p Name: #{@user.name}
+%p Your Kill Pin: #{@user.kill_pin}
+/%p Email: #{@user.email}
+/%p Image Url: #{@user.image_url}
+%p Game ID: #{@user.game.id}
+%p Game Name: #{@user.game.name}
 %p
 - if @game.state == :over
   - if @game.winner == @user
@@ -22,3 +19,5 @@
       .form-group{:class => "#{'has-danger' unless params[:error].nil?}"}
         %input.form-control{:name => "target_kill_pin", :placeholder => params[:error].nil? ? "#{@user.target.name}'s kill pin" : params[:error], :type => "text"}
       %button.btn.btn-danger{:type => "submit"} Kill
+- elsif @game.state == :join
+  Wait for the game admin to start the game.
