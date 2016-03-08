@@ -41,3 +41,6 @@
   -webkit-filter: invert(1);
   filter: invert(1);
 }
+.not-rounded {
+  border-radius: 0 !important;
+}
