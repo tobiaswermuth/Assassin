@@ -44,3 +44,10 @@
 .not-rounded {
   border-radius: 0 !important;
 }
+.index-card {
+  width: 150px;
+}
+.index-card-img {
+  width: 50px;
+  padding-top: 15px
+}

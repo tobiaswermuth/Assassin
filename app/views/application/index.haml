@@ -1,7 +1,17 @@
-%div{:class => "row"}
-.row
-  %a.btn.btn-lg.btn-primary.center-block{:href => "/game/create"} Create Game
-.row{:style => "padding-top: 10px"}
-  %a.btn.btn-lg.btn-primary.center-block{:href => "/game/join"} Join Game
-.row{:style => "padding-top: 10px"}
-  %a.btn.btn-lg.btn-primary.center-block{:href => "https://en.wikipedia.org/wiki/Assassin_(game)", :target => "_blank"} What is Assassin?
+%div{:style => "width: 100%;text-align: center;"}
+  %div{:style => "display: inline-block;"}
+    %a.label{:href => "/game/create"}
+      .card.bg-primary.index-card
+        %img.img-center.card-img-top.img-invert.index-card-img{:src => image_url('flaticon/plus-sign-in-a-black-circle.png')}/
+        .card-block
+          %h6.text-center Create Game
+    %a.label{:href => "/game/join"}
+      .card.bg-primary.index-card
+        %img.img-center.card-img-top.img-invert.index-card-img{:src => image_url('flaticon/arrow-pointing-right-in-a-circle.png')}/
+        .card-block
+          %h6.text-center Join game
+    %a.label{:href => "https://en.wikipedia.org/wiki/Assassin_(game)", :target => "_blank"}
+      .card.bg-primary.index-card
+        %img.img-center.card-img-top.img-invert.index-card-img{:src => image_url('flaticon/question-mark-on-a-circular-black-background.png')}/
+        .card-block
+          %h6.text-center Help

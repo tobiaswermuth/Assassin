@@ -10,10 +10,12 @@
     %meta{:content => "width=device-width, initial-scale=1, shrink-to-fit=no", :name => "viewport"}/
   %body
     %nav.navbar.navbar-dark.bg-primary.not-rounded
-      %a.navbar-brand{:href => "/"}
-        %img.img-invert.img-fluid{:src => image_url('flaticon/home.png'), :style => "max-width: 26px;"}
-      .navbar-brand{:style => "font-weight: 300;"}
-        =@title || "Assassin"
+      .nav.navbar-nav
+        %a.nav-item.nav-link{:href => "/"}
+          %img.img-invert{:src => image_url('flaticon/home.png'), :style => "max-width: 26px;"}
+        .nav-item
+          .navbar-brand{:style => "font-weight: 300;"}
+            =@title || "Assassin"
     .container{:style => "padding-top: 10px; padding-bottom: 50px;"}
       = yield
     %nav.navbar.navbar-fixed-bottom.navbar-light.bg-faded.text-center{:style => "font-weight: 200;"}
