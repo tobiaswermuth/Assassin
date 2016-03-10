@@ -1,6 +1,6 @@
 %form{:action => "/game/join", :method => "get"}
   %fieldset.form-group{:class => "#{'has-danger' unless params[:error].nil?}"}
-    %form-control-label
+    %label.form-control-label
       - if params[:error].nil?
         ="Game ID (ask your game admin for the join/invitation link!)"
       - else
