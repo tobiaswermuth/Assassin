@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
   @@titles = {
-    "index" => "Welcome to the Assassin Game",
+    "index" => "Welcome to the Assassin Game Alpha",
     "about" => "About",
     "terms" => "Terms and Conditions",
     "privacy" => "Privacy Policy",

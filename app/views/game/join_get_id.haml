@@ -2,8 +2,8 @@
   %fieldset.form-group{:class => "#{'has-danger' unless params[:error].nil?}"}
     %form-control-label
       - if params[:error].nil?
-        ="Game ID"
+        ="Game ID (ask your game admin for the join/invitation link!)"
       - else
-        ="Game ID (#{params[:error]})"
+        ="Game ID (#{params[:error]} - contact your game admin!)"
     %input.form-control.form-control-danger{:name => "id", :placeholder => "A1234", :type => "text"}/
-  %button.btn.btn-primary.center-block{:type => "submit"} Join
+  %button.btn.btn-lg.btn-primary.center-block{:type => "submit"} Join

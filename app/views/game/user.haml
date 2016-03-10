@@ -18,6 +18,6 @@
     %form.form-inline{:action => "/game/#{@game.id}/user/#{@user.id}/kill_target", :method => "post"}
       .form-group{:class => "#{'has-danger' unless params[:error].nil?}"}
         %input.form-control{:name => "target_kill_pin", :placeholder => params[:error].nil? ? "#{@user.target.name}'s kill pin" : params[:error], :type => "text"}
-      %button.btn.btn-danger{:type => "submit"} Kill
+      %button.btn.btn-lg.btn-danger{:type => "submit"} Kill
 - elsif @game.state == :join
   Wait for the game admin to start the game.

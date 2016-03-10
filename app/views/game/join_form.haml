@@ -1,8 +1,14 @@
 %form{:action => "/game/#{@game.id}/join", :method => "post"}
   %p Rules: #{@game.rules}
-  %fieldset.form-group
-    %label Name
-    %input.form-control{:name => "name", :placeholder => "You in-game name", :type => "text"}/
+  - unless @invitation_token.nil?
+    %input{:name => "invitation_token", :type => "hidden", :value => @invitation_token}/
+  - if @invitation_user_name == no_user_name
+    %fieldset.form-group
+      %label Name
+      %input.form-control{:name => "name", :placeholder => "You in-game name", :type => "text"}/
+  - else
+    %fieldset.form-group
+      %label Your user name (set by admin): #{@invitation_user_name}
   /%fieldset.form-group
   /  %label Email
   /  %input.form-control{:name => "email", :placeholder => "me@you.com", :type => "text"}/
@@ -11,4 +17,4 @@
   /  %label.center-block{:style => "text-align: center"} Upload image here!
   /  %input{:name => "image_url", :type => "hidden", :value => "image.url.com"}/
 
-  %button.btn.btn-primary.center-block{:type => "submit"} Join
+  %button.btn.btn-lg.btn-primary.center-block{:type => "submit"} Join

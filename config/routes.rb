@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   post 'game/create' => 'game#do_create'
 
   get 'game/:id/admin/:password/overview' => 'game#overview'
+  post 'game/:id/admin/:password/invite' => 'game#invite'
+  post 'game/:id/admin/:password/invites' => 'game#invites'
   get 'game/:id/admin/:password/start' => 'game#start'
 
   get 'game/join' => 'game#join_get_id'

@@ -1,19 +1,33 @@
-="ID: #{@game.id}"
+%p
+  %b Bookmark this site to keep access as admin! You can't access the admin overview without it!
+%p ID: #{@game.id}
+%p Name: #{@game.name}
 - if @game.state == :join
-  %p
-  %a{:href => "/game/#{@game.id}/join", :target => "_blank"}Join link
-%p
-="State: #{@game.state}"
-%p
-="Name: #{@game.name}"
-%p
-="Rules: #{@game.rules}"
-%p
-="Invitation required?: #{@game.invitation_only}"
-%p
-="Password: #{@game.password}"
-%p
-="#{@game.users.length} Users: #{@game.users.map{|_,user| user.name}.join ', '}"
+  %p Invitation required?: #{@game.invitation_only}
+  - if @game.invitation_only
+    %form.form-inline{:action => "/game/#{@game.id}/admin/#{@game.password}/invite", :method => "post"}
+      .form-group
+        %input.form-control{:name => "user_name", :placeholder => "The players name", :type => "text"}
+      %button.btn.btn-lg.btn-primary{:type => "submit"} Create Invitation
+    %form.form-inline{:action => "/game/#{@game.id}/admin/#{@game.password}/invites", :method => "post"}
+      .form-group
+        %label Number of anonymous Invitations
+        %select.form-control{:name => "amount", :placeholder => "The players name", :type => "text"}
+          - (1..100).each do |num|
+            %option #{num}
+      %button.btn.btn-lg.btn-primary{:type => "submit"} Create Invitations
+    - @game.invitations.each do |invitation_token, user_name|
+      %p
+        =user_name != no_user_name ? "'#{user_name}'s" : "Anonymous"
+        %a{:href => "/game/#{@game.id}/join?invitation_token=#{invitation_token}", :target => "_blank"}Join Link
+  - else
+    %p
+      Join link:
+      %a{:href => "/game/#{@game.id}/join", :target => "_blank"}Share me with your players!
+%p State: #{@game.state}
+%p Rules: #{@game.rules}
+%p Password: #{@game.password}
+%p #{@game.users.length} Users: #{@game.users.map{|_,user| user.name}.join ', '}
 %p
 - if @game.state == :running
   ="#{@game.remaining_users.length} Remaining players: #{@game.remaining_users.map{|_| _.name}.join ', '}"
@@ -22,4 +36,4 @@
 - elsif @game.users.length < 2
   2 or more users needed!
 - else
-  %a.btn.btn-primary.center-block{:href => "/game/#{@game.id}/admin/#{@game.password}/start"} Start Game
+  %a.btn.btn-lg.btn-primary.center-block{:href => "/game/#{@game.id}/admin/#{@game.password}/start"} Start Game

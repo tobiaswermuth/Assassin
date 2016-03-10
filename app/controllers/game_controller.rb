@@ -6,10 +6,7 @@ class GameController < ActionController::Base
 
   rescue_from RedirectionException, :with => :redirect_exception
 
-  @@games = {}
-
   @@titles = {
-    "index" => "Welcome to Assassin",
     "create" => "Create a new Assassin Game",
     "join_get_id" => "Join an Assassin Game",
     "user" => "Your Game Overview"
@@ -18,6 +15,11 @@ class GameController < ActionController::Base
   before_action {
     @title = @@titles[action_name]
   }
+
+  @@games = {}
+  @@no_user_name = "[[{{((no_user_name))}}]]"
+  helper_method :no_user_name
+  def no_user_name; @@no_user_name end
 
   def do_create
     game = Game.new params[:name], params[:rules], !params[:invitation_only].nil?
@@ -28,13 +30,35 @@ class GameController < ActionController::Base
 
   def overview
     @game = game_by_id params[:id], "/"
-    redirect_to "/" if @game.password != params[:password]
+    check_admin_password @game, params[:password]
 
     @title = "#{@game.name} - Administration"
   end
 
+  def invite
+    game = game_by_id params[:id]
+    check_admin_password game, params[:password]
+
+    game.create_invitation params[:user_name]
+
+    redirect_to game_admin_route game, "overview"
+  end
+
+  def invites
+    game = game_by_id params[:id]
+    check_admin_password game, params[:password]
+
+    (1..params[:amount].to_i).each do |_|
+      game.create_invitation @@no_user_name
+    end
+
+    redirect_to game_admin_route game, "overview"
+  end
+
   def start
     game = game_by_id params[:id]
+    check_admin_password game, params[:password]
+
     game.state = :running
 
     users_to_assign = game.users.values
@@ -65,13 +89,33 @@ class GameController < ActionController::Base
   def join_form
     @game = game_by_id params[:id]
     raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is no longer joinable!") if @game.state != :join
+
     @title = "Join #{@game.name}"
+
+    if params[:invitation_token].nil?
+      raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is invitation only!") if @game.invitation_only != true
+    else
+      @invitation_token = params[:invitation_token]
+      @invitation_user_name = @game.invitations[@invitation_token]
+      raise GameNotJoinableException.new(@game.id, "/game/join?error=Your invitation token has already been used!") if @invitation_user_name.nil?
+    end
   end
 
   def join
     game = game_by_id params[:id]
 
-    user = User.new params[:name], params[:email], params[:image_url], game
+    if params[:invitation_token].nil?
+      raise GameNotJoinableException.new(game.id, "/game/join?error=Game '#{game.id}' is invitation only!") if game.invitation_only != true
+      user_name = params[:name]
+    else
+      invitation_token = params[:invitation_token]
+      invitation_user_name = game.invitations[invitation_token]
+      raise GameNotJoinableException.new(game.id, "/game/join?error=Your invitation token has already been used!") if invitation_user_name.nil?
+      user_name = invitation_user_name == @@no_user_name ? params[:name] : invitation_user_name
+      game.delete_invitation invitation_token
+    end
+
+    user = User.new user_name, params[:email], params[:image_url], game
     game.users[user.id] = user
 
     redirect_to "/game/#{game.id}/user/#{user.id}"
@@ -103,6 +147,10 @@ class GameController < ActionController::Base
 
   def game_admin_route(game, post_fix = "")
     "/game/#{game.id}/admin/#{game.password}/#{post_fix}"
+  end
+
+  def check_admin_password(game, password)
+    raise WrongPasswordException.new(password, "/?error=Wrong admin password!!") if game.password != password
   end
 
   def game_by_id(game_id, fallback_url = "/game/join")
