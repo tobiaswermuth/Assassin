@@ -8,8 +8,7 @@ class GameController < ActionController::Base
 
   @@titles = {
     "create" => "Create a new Assassin Game",
-    "join_get_id" => "Join an Assassin Game",
-    "user" => "Your Game Overview"
+    "join_get_id" => "Join an Assassin Game"
   }
 
   before_action {
@@ -48,7 +47,7 @@ class GameController < ActionController::Base
           :title => "Running",
           :description => "The Assassin Game is running. Wait for one player to win.",
           :button_replacement_type => "info",
-          :button_replacement_text => "#{@game.remaining_users.length} players remaining!"
+          :button_replacement_text => "#{@game.remaining_users.length} players remaining."
         },
         :over => {
           :title => "Over",
@@ -135,7 +134,7 @@ class GameController < ActionController::Base
       game.delete_invitation invitation_token
     end
 
-    user = User.new user_name, params[:email], params[:image_url], game
+    user = User.new user_name, params[:email], params[:image_url]
     game.users[user.id] = user
 
     redirect_to "/game/#{game.id}/user/#{user.id}"
@@ -144,6 +143,8 @@ class GameController < ActionController::Base
   def user
     @game = game_by_id(params[:id])
     @user = @game.user_by_id params[:user_id]
+
+    @title = "#{@game.name} - #{@user.name}"
   end
 
   def kill_target
@@ -154,6 +155,7 @@ class GameController < ActionController::Base
     if params[:target_kill_pin] == target.kill_pin
       user.target = target.target
       target.target = nil
+      target.killer = user
 
       if game.remaining_users.length == 1
         game.state = :over

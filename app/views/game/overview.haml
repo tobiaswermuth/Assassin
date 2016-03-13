@@ -11,7 +11,7 @@
       - if !@state[:button_replacement_text].nil?
         %span.label{:class => "label-#{@state[:button_replacement_type]}"}=@state[:button_replacement_text]
       - elsif !@state[:next_state_button_text].nil?
-        %a.btn.btn-primary{:href => @state[:next_state_button_url]}=@state[:next_state_button_text]
+        %a.btn.btn-success{:href => @state[:next_state_button_url]}=@state[:next_state_button_text]
       %p
         - @game.remaining_users.each do |user|
           %span.label{:class => "label-success"}=user.name
@@ -25,12 +25,12 @@
         %h4.card-title=@game.invitation_only ? "Invitation Only" : "Open"
         %p.card-text
         - if @game.invitation_only
-          %form.form-inline{:action => "/game/#{@game.id}/admin/#{@game.password}/invite", :method => "post"}
-            %input.form-control{:name => "user_name", :placeholder => "Player name", :type => "text", :style =>"width: 100%"}
+          %form{:action => "/game/#{@game.id}/admin/#{@game.password}/invite", :method => "post"}
+            %input.form-control{:name => "user_name", :placeholder => "Player name", :type => "text"}
             %button.btn.btn-block.btn-primary{:type => "submit"} Create Invitation
           %p
-            %form.form-inline{:action => "/game/#{@game.id}/admin/#{@game.password}/invites", :method => "post"}
-              %select.c-select.form-control{:name => "amount", :style =>"width: 100%"}
+            %form{:action => "/game/#{@game.id}/admin/#{@game.password}/invites", :method => "post"}
+              %select.c-select.form-control{:name => "amount"}
                 - (1..100).each do |num|
                   %option #{num}
               %button.btn.btn-block.btn-primary{:type => "submit"} Create Invitations
