@@ -9,4 +9,8 @@ class User
     @game = game
     @kill_pin = ('0'..'9').to_a.shuffle[0,4].join
   end
+
+  def is_alive?
+    !@target.nil?
+  end
 end

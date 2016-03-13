@@ -27,7 +27,13 @@ class Game
 
   def remaining_users
     @users.values.select do |user|
-      !user.target.nil?
+      user.is_alive?
+    end
+  end
+
+  def dead_users
+    @users.values.reject do |user|
+      user.is_alive?
     end
   end
 
