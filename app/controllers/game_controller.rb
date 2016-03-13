@@ -163,7 +163,7 @@ class GameController < ActionController::Base
 
       redirect_to "/game/#{game.id}/user/#{user.id}"
     else
-      raise GameNotJoinableException.new(params[:target_kill_pin], "/game/#{game.id}/user/#{user.id}?error=#{target.name}'s kill pin is not #{params[:target_kill_pin]}!")
+      raise GameNotJoinableException.new(params[:target_kill_pin], "/game/#{game.id}/user/#{user.id}?error=#{target.name}'s kill pin is not '#{params[:target_kill_pin]}'!")
     end
   end
 

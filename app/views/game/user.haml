@@ -27,7 +27,7 @@
           %form{:action => "/game/#{@game.id}/user/#{@user.id}/kill_target", :method => "post"}
             .form-group{:class => "#{'has-danger' unless params[:error].nil?}"}
               %input.form-control{:name => "target_kill_pin", :placeholder => params[:error].nil? ? "#{@user.target.name}'s kill pin" : params[:error], :type => "text"}
-            %button.btn.btn-block.btn-danger{:type => "submit"} Kill
+            %button.btn.btn-lg.btn-block.btn-danger{:type => "submit"} Kill
     .card.text-xs-center
       .card-header
         Rules
