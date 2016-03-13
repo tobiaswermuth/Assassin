@@ -20,6 +20,8 @@ class GameController < ActionController::Base
   @@no_user_name = "[[{{((no_user_name))}}]]"
   helper_method :no_user_name
   def no_user_name; @@no_user_name end
+  @@min_players = 2
+
 
   def do_create
     game = Game.new params[:name], params[:rules], !params[:invitation_only].nil?
@@ -33,6 +35,29 @@ class GameController < ActionController::Base
     check_admin_password @game, params[:password]
 
     @title = "#{@game.name} - Administration"
+    states = {
+        :join => {
+          :title => "Join",
+          :description => "Players are able to join the Assassin Game.",
+          :button_replacement_type => "warning",
+          :button_replacement_text => @game.users.length < @@min_players ? "You need #{@@min_players - @game.users.length} more players!" : nil,
+          :next_state_button_text => "Start Game",
+          :next_state_button_url => "/game/#{@game.id}/admin/#{@game.password}/start"
+        },
+        :running => {
+          :title => "Running",
+          :description => "The Assassin Game is running. Wait for one player to win.",
+          :button_replacement_type => "info",
+          :button_replacement_text => "#{@game.remaining_users.length} players remaining!"
+        },
+        :over => {
+          :title => "Over",
+          :description => "The Assassin Game is over.",
+          :button_replacement_type => "success",
+          :button_replacement_text => @game.winner.nil? ? "No one won!" : "Winner: #{@game.winner.name}"
+        }
+      }
+    @state = states[@game.state]
   end
 
   def invite
@@ -93,7 +118,7 @@ class GameController < ActionController::Base
     @title = "Join #{@game.name}"
 
     if params[:invitation_token].nil?
-      raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is invitation only!") if @game.invitation_only != true
+      raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is invitation only!") if @game.invitation_only
     else
       @invitation_token = params[:invitation_token]
       @invitation_user_name = @game.invitations[@invitation_token]
@@ -105,7 +130,7 @@ class GameController < ActionController::Base
     game = game_by_id params[:id]
 
     if params[:invitation_token].nil?
-      raise GameNotJoinableException.new(game.id, "/game/join?error=Game '#{game.id}' is invitation only!") if game.invitation_only != true
+      raise GameNotJoinableException.new(game.id, "/game/join?error=Game '#{game.id}' is invitation only!") if game.invitation_only
       user_name = params[:name]
     else
       invitation_token = params[:invitation_token]

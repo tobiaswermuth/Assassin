@@ -1,13 +1,29 @@
 %p
-  %b Bookmark this site to keep access as admin! You can't access the admin overview without it!
-%p ID: #{@game.id}
-%p Name: #{@game.name}
+  %b Bookmark this site to keep admin access!
+  %b Do not share this link with others.
+%div{:style => "text-align: center;"}
+  %div{:style => "display: inline-block;"}
+    .card.overview_card
+      .card-header
+        Game State
+      .card-block
+        %h4.card-title=@state[:title]
+        %p.card-text=@state[:description]
+        - if !@state[:button_replacement_text].nil?
+          %span.label{:class => "label-#{@state[:button_replacement_type]}"}=@state[:button_replacement_text]
+        - elsif !@state[:next_state_button_text].nil?
+          %a.btn.btn-primary{:href => @state[:next_state_button_url]}=@state[:next_state_button_text]
+%p Rules: #{@game.rules}
+%p #{@game.users.length} Users: #{@game.users.map{|_,user| user.name}.join ', '}
+%p
+- if @game.state == :running
+  ="#{@game.remaining_users.length} Remaining players: #{@game.remaining_users.map{|_| _.name}.join ', '}"
 - if @game.state == :join
   %p Invitation required?: #{@game.invitation_only}
   - if @game.invitation_only
     %form.form-inline{:action => "/game/#{@game.id}/admin/#{@game.password}/invite", :method => "post"}
       .form-group
-        %input.form-control{:name => "user_name", :placeholder => "The players name", :type => "text"}
+        %input.form-control{:name => "user_name", :placeholder => "Choose the players name", :type => "text"}
       %button.btn.btn-lg.btn-primary{:type => "submit"} Create Invitation
     %form.form-inline{:action => "/game/#{@game.id}/admin/#{@game.password}/invites", :method => "post"}
       .form-group
@@ -22,18 +38,5 @@
         %a{:href => "/game/#{@game.id}/join?invitation_token=#{invitation_token}", :target => "_blank"}Join Link
   - else
     %p
-      Join link:
-      %a{:href => "/game/#{@game.id}/join", :target => "_blank"}Share me with your players!
-%p State: #{@game.state}
-%p Rules: #{@game.rules}
-%p Password: #{@game.password}
-%p #{@game.users.length} Users: #{@game.users.map{|_,user| user.name}.join ', '}
-%p
-- if @game.state == :running
-  ="#{@game.remaining_users.length} Remaining players: #{@game.remaining_users.map{|_| _.name}.join ', '}"
-- elsif @game.state == :over
-  ="Winner: #{@game.winner.name}"
-- elsif @game.users.length < 2
-  2 or more users needed!
-- else
-  %a.btn.btn-lg.btn-primary.center-block{:href => "/game/#{@game.id}/admin/#{@game.password}/start"} Start Game
+      Share this link with your players:
+      %a{:href => "/game/#{@game.id}/join", :target => "_blank"}Share me!

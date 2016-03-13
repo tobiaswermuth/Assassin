@@ -2,7 +2,7 @@
   %p Rules: #{@game.rules}
   - unless @invitation_token.nil?
     %input{:name => "invitation_token", :type => "hidden", :value => @invitation_token}/
-  - if @invitation_user_name == no_user_name
+  - if @invitation_user_name.nil? || @invitation_user_name == no_user_name
     %fieldset.form-group
       %label Name
       %input.form-control{:name => "name", :placeholder => "You in-game name", :type => "text"}/
