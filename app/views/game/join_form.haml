@@ -1,14 +1,14 @@
 %form{:action => "/game/#{@game.id}/join", :method => "post"}
   %p Rules: #{@game.rules}
-  - unless @invitation_token.nil?
-    %input{:name => "invitation_token", :type => "hidden", :value => @invitation_token}/
-  - if @invitation_user_name.nil? || @invitation_user_name == no_user_name
+  - unless @invitation.nil?
+    %input{:name => "invitation_token", :type => "hidden", :value => @invitation.token}/
+  - if @invitation.nil? || @invitation.name.nil?
     %fieldset.form-group
       %label Name
       %input.form-control{:name => "name", :placeholder => "You in-game name", :type => "text"}/
   - else
     %fieldset.form-group
-      %label Your user name (set by admin): #{@invitation_user_name}
+      %label Your user name (set by admin): #{@invitation.name}
   /%fieldset.form-group
   /  %label Email
   /  %input.form-control{:name => "email", :placeholder => "me@you.com", :type => "text"}/

@@ -1,45 +1,51 @@
-class Game
-  attr_accessor :id, :name, :rules, :invitation_only, :users, :password, :state, :invitations
+class Game < ActiveRecord::Base
+  include ExceptionHelper
+  has_many :players, dependent: :destroy, autosave: true
+  has_many :invitations, dependent: :destroy, autosave: true
 
-  def initialize(name, rules, invitation_only)
-    @id = SecureRandom.hex
-    @name = name
-    @rules = rules
-    @invitation_only = invitation_only
-    @password = SecureRandom.hex
-    @users = {}
-    @state = :join
-    @invitations = {}
-  end
+  enum state: [ :join, :running, :over ]
 
-  def user_by_id(user_id, fallback_url = "/")
-    raise UserNotFoundException.new(user_id, fallback_url) if (user = @users[user_id]).nil?
-    user
+  def self.new_def(name, rules, invitation_only)
+    game = Game.new(
+      :name => name,
+      :rules => rules,
+      :invitation_only => invitation_only,
+      :password => SecureRandom.hex
+    )
+    game.save
+
+    game
   end
 
   def create_invitation(user_name = nil)
-    @invitations[SecureRandom.hex] = user_name
+    invitations.create(:name => user_name, :token => SecureRandom.hex)
   end
 
-  def delete_invitation(invitation_token)
-    @invitations.delete invitation_token
+  def create_player(name, email, image_url)
+    players.create(
+      :name => name,
+      :email => email,
+      :image_url => image_url,
+      :kill_pin => ('0'..'9').to_a.shuffle[0,4].join
+    )
   end
 
-  def remaining_users
-    @users.values.select do |user|
-      user.is_alive?
-    end
+  def player_by_id(player_id, fallback_url = "/")
+    raise UserNotFoundException.new(player_id, fallback_url) if (player = players.where(:id => player_id).first).nil?
+    player
   end
 
-  def dead_users
-    @users.values.reject do |user|
-      user.is_alive?
-    end
+  def remaining_players
+    players.where.not(:chaser => nil)
+  end
+
+  def dead_players
+    players.where(:chaser => nil)
   end
 
   def winner
-    if remaining_users.length == 1
-      remaining_users.first
+    if remaining_players.length == 1
+      remaining_players.first
     end
   end
 end

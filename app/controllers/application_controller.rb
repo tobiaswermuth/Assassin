@@ -15,4 +15,7 @@ class ApplicationController < ActionController::Base
     @title = @@titles[action_name]
   }
 
+  def index
+    @games = Game.all
+  end
 end

@@ -3,10 +3,10 @@
     .card-header
       Your Status
     .card-block
-      - if @game.state == :join
+      - if @game.join?
         %h4.card-title="Waiting"
         %p.card-text The Game has not started yet.
-      - elsif @game.state == :running
+      - elsif @game.running?
         %h4.card-title= @user.is_alive? ? "Alive" : "Dead"
         %p.card-text
           - if @user.is_alive?
@@ -15,9 +15,9 @@
           - else
             %b=@user.killer.name
             =" got ya."
-      - elsif @game.state == :over
+      - elsif @game.over?
         %h4.card-title= @user.is_alive? ? "You are the winner!" : "You lost."
-  -if @game.state == :running && @user.is_alive?
+  -if @game.running? && @user.is_alive?
     .card.text-xs-center
       .card-header
         Your Target

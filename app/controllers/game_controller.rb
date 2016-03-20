@@ -15,16 +15,11 @@ class GameController < ActionController::Base
     @title = @@titles[action_name]
   }
 
-  @@games = {}
-  @@no_user_name = "[[{{((no_user_name))}}]]"
-  helper_method :no_user_name
-  def no_user_name; @@no_user_name end
   @@min_players = 2
 
 
   def do_create
-    game = Game.new params[:name], params[:rules], !params[:invitation_only].nil?
-    @@games[game.id] = game
+    game = Game.new_def params[:name], params[:rules], !params[:invitation_only].nil?
 
     redirect_to game_admin_route game, "overview"
   end
@@ -35,21 +30,21 @@ class GameController < ActionController::Base
 
     @title = "#{@game.name} - Administration"
     states = {
-        :join => {
+        "join" => {
           :title => "Join",
           :description => "Players are able to join the Assassin Game.",
           :button_replacement_type => "warning",
-          :button_replacement_text => @game.users.length < @@min_players ? "You need #{@@min_players - @game.users.length} more players!" : nil,
+          :button_replacement_text => @game.players.length < @@min_players ? "You need #{@@min_players - @game.players.length} more players!" : nil,
           :next_state_button_text => "Start Game",
           :next_state_button_url => "/game/#{@game.id}/admin/#{@game.password}/start"
         },
-        :running => {
+        "running" => {
           :title => "Running",
           :description => "The Assassin Game is running. Wait for one player to win.",
           :button_replacement_type => "info",
-          :button_replacement_text => "#{@game.remaining_users.length} players remaining."
+          :button_replacement_text => "#{@game.remaining_players.length} players remaining."
         },
-        :over => {
+        "over" => {
           :title => "Over",
           :description => "The Assassin Game is over.",
           :button_replacement_type => "success",
@@ -73,7 +68,7 @@ class GameController < ActionController::Base
     check_admin_password game, params[:password]
 
     (1..params[:amount].to_i).each do |_|
-      game.create_invitation @@no_user_name
+      game.create_invitation
     end
 
     redirect_to game_admin_route game, "overview"
@@ -83,13 +78,13 @@ class GameController < ActionController::Base
     game = game_by_id params[:id]
     check_admin_password game, params[:password]
 
-    game.state = :running
+    game.running!
 
-    users = game.users.values.shuffle
-    for i in 0...users.length
-      user = users[i]
-      target = users[(i+1) % users.length]
-      user.target = target
+    players = game.players.shuffle
+    for i in 0...players.length
+      player = players[i]
+      target = players[(i+1) % players.length]
+      player.targets << target
     end
 
     redirect_to game_admin_route game, "overview"
@@ -107,16 +102,15 @@ class GameController < ActionController::Base
 
   def join_form
     @game = game_by_id params[:id]
-    raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is no longer joinable!") if @game.state != :join
+    raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is no longer joinable!") unless @game.join?
 
     @title = "Join #{@game.name}"
 
     if params[:invitation_token].nil?
       raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is invitation only!") if @game.invitation_only
     else
-      @invitation_token = params[:invitation_token]
-      @invitation_user_name = @game.invitations[@invitation_token]
-      raise GameNotJoinableException.new(@game.id, "/game/join?error=Your invitation token has already been used!") if @invitation_user_name.nil?
+      @invitation = @game.invitations.where(:token => params[:invitation_token]).first
+      raise GameNotJoinableException.new(@game.id, "/game/join?error=Your invitation token has already been used!") if @invitation.nil?
     end
   end
 
@@ -127,43 +121,41 @@ class GameController < ActionController::Base
       raise GameNotJoinableException.new(game.id, "/game/join?error=Game '#{game.id}' is invitation only!") if game.invitation_only
       user_name = params[:name]
     else
-      invitation_token = params[:invitation_token]
-      invitation_user_name = game.invitations[invitation_token]
-      raise GameNotJoinableException.new(game.id, "/game/join?error=Your invitation token has already been used!") if invitation_user_name.nil?
-      user_name = invitation_user_name == @@no_user_name ? params[:name] : invitation_user_name
-      game.delete_invitation invitation_token
+      invitation = game.invitations.where(:token => params[:invitation_token]).first
+      raise GameNotJoinableException.new(game.id, "/game/join?error=Your invitation token has already been used!") if invitation.nil?
+      user_name = invitation.name.nil? ? params[:name] : invitation.name
+      Invitation.where(:token => invitation.token).first.destroy
     end
 
-    user = User.new user_name, params[:email], params[:image_url]
-    game.users[user.id] = user
+    player = game.create_player user_name, params[:email], params[:image_url]
 
-    redirect_to "/game/#{game.id}/user/#{user.id}"
+    redirect_to "/game/#{game.id}/user/#{player.id}"
   end
 
   def user
     @game = game_by_id(params[:id])
-    @user = @game.user_by_id params[:user_id]
+    @user = @game.player_by_id params[:user_id]
 
     @title = "#{@game.name} - #{@user.name}"
   end
 
   def kill_target
     game = game_by_id(params[:id])
-    user = game.user_by_id params[:user_id]
-    target = user.target
+    player = game.player_by_id params[:user_id]
+    target = player.target
 
     if params[:target_kill_pin] == target.kill_pin
-      user.target = target.target
-      target.target = nil
-      target.killer = user
+      target.target.chaser = player
+      target.chaser = nil
+      target.save
 
-      if game.remaining_users.length == 1
-        game.state = :over
+      if game.remaining_players.length == 1
+        game.over!
       end
 
-      redirect_to "/game/#{game.id}/user/#{user.id}"
+      redirect_to "/game/#{game.id}/user/#{player.id}"
     else
-      raise GameNotJoinableException.new(params[:target_kill_pin], "/game/#{game.id}/user/#{user.id}?error=#{target.name}'s kill pin is not '#{params[:target_kill_pin]}'!")
+      raise WrongKillPinException.new(params[:target_kill_pin], "/game/#{game.id}/user/#{player.id}?error=#{target.name}'s kill pin is not '#{params[:target_kill_pin]}'!")
     end
   end
 
@@ -177,7 +169,7 @@ class GameController < ActionController::Base
 
   def game_by_id(game_id, fallback_url = "/game/join")
     fallback_url = "#{fallback_url}?error=Could not find a game with ID \'#{game_id}\'!"
-    raise GameNotFoundException.new(game_id, fallback_url) if (game = @@games[game_id]).nil?
+    raise GameNotFoundException.new(game_id, fallback_url) if (game = Game.where(:id => game_id).first).nil?
     game
   end
 

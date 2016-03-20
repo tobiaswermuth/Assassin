@@ -15,3 +15,6 @@
         %img.img-center.card-img-top.img-invert.index-card-img{:src => image_url('flaticon/question-mark-on-a-circular-black-background.png')}/
         .card-block
           %h6.text-center Help
+%div{:style => "text-align: center;"}
+  %div{:style => "display: inline-block;"}
+    %label Games total: #{@games.length} | Games running: #{@games.select{|g|g.running?}.length}
