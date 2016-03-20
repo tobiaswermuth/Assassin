@@ -87,7 +87,7 @@ class GameController < ActionController::Base
     for i in 0...players.length
       player = players[i]
       target = players[(i+1) % players.length]
-      player.targets << target
+      player.target = target
     end
 
     redirect_to game_admin_route game, "overview"

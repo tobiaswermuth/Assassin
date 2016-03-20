@@ -1,7 +1,7 @@
 class Player < ActiveRecord::Base
   belongs_to :game
 
-  has_many :targets, :class_name => "Player", :foreign_key => 'chaser_id'
+  has_one :target, :class_name => "Player", :foreign_key => 'chaser_id'
   belongs_to :chaser, :class_name => "Player"
 
   def self.by_id(id, fallback_url = "/")
@@ -11,9 +11,5 @@ class Player < ActiveRecord::Base
 
   def is_alive?
     !chaser.nil?
-  end
-
-  def target
-    targets.where.not(:chaser => nil).first
   end
 end
