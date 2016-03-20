@@ -117,6 +117,8 @@ class GameController < ActionController::Base
   def join
     game = game_by_id params[:id]
 
+    raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is no longer joinable!") unless @game.join?
+
     if params[:invitation_token].nil?
       raise GameNotJoinableException.new(game.id, "/game/join?error=Game '#{game.id}' is invitation only!") if game.invitation_only
       user_name = params[:name]
