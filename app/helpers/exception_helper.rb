@@ -7,6 +7,9 @@ module ExceptionHelper
     end
   end
 
+  class GameStartException < RedirectionException
+  end
+
   class WrongPasswordException < RedirectionException
   end
 

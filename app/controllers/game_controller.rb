@@ -78,6 +78,9 @@ class GameController < ActionController::Base
     game = game_by_id params[:id]
     check_admin_password game, params[:password]
 
+    raise GameStartException.new(game.id, "#{game_admin_route game, "overview"}?error=Game is running already!") unless game.join?
+    raise GameStartException.new(game.id, "#{game_admin_route game, "overview"}?error=Game doesn't have enough players!") unless game.players.length >= @@min_players
+
     game.running!
 
     players = game.players.shuffle
@@ -116,8 +119,7 @@ class GameController < ActionController::Base
 
   def join
     game = game_by_id params[:id]
-
-    raise GameNotJoinableException.new(@game.id, "/game/join?error=Game '#{@game.id}' is no longer joinable!") unless @game.join?
+    raise GameNotJoinableException.new(game.id, "/game/join?error=Game '#{game.id}' is no longer joinable!") unless game.join?
 
     if params[:invitation_token].nil?
       raise GameNotJoinableException.new(game.id, "/game/join?error=Game '#{game.id}' is invitation only!") if game.invitation_only
@@ -143,6 +145,8 @@ class GameController < ActionController::Base
 
   def kill_target
     game = game_by_id(params[:id])
+    raise WrongKillPinException.new(params[:target_kill_pin], "/game/#{game.id}/user/#{player.id}?error=The game is over!") unless game.running?
+
     player = game.player_by_id params[:user_id]
     target = player.target
 
